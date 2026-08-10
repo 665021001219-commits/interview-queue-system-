@@ -26,15 +26,14 @@ const STAFF_PASSWORD = '1111';
 
 // ------------------------------------------
 // เชื่อมต่อฐานข้อมูล MySQL
-// Railway จะสร้าง env variable พวกนี้ให้อัตโนมัติ
-// ตอนที่เรา add MySQL plugin เข้าไปในโปรเจกต์
+// แก้ไขให้รองรับทั้ง DB_ และ MYSQL ตัวแปรบน Railway
 // ------------------------------------------
 const pool = mysql.createPool({
-  host: process.env.MYSQLHOST || 'localhost',
-  port: process.env.MYSQLPORT || 3306,
-  user: process.env.MYSQLUSER || 'root',
-  password: process.env.MYSQLPASSWORD || '',
-  database: process.env.MYSQLDATABASE || 'interview_queue',
+  host: process.env.DB_HOST || process.env.MYSQLHOST || 'localhost',
+  port: Number(process.env.DB_PORT || process.env.MYSQLPORT || 3306),
+  user: process.env.DB_USER || process.env.MYSQLUSER || 'root',
+  password: process.env.DB_PASSWORD || process.env.MYSQLPASSWORD || '',
+  database: process.env.DB_NAME || process.env.MYSQLDATABASE || 'interview_queue',
   waitForConnections: true,
   connectionLimit: 10,
 });

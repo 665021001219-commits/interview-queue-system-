@@ -1,0 +1,40 @@
+/* style.css - ตกแต่งเสริมจาก Bootstrap นิดหน่อย */
+
+body {
+  background-color: #f4f6f9;
+  font-family: 'Segoe UI', 'Sarabun', sans-serif;
+}
+
+.card-box {
+  max-width: 420px;
+  margin: 80px auto;
+  padding: 30px;
+  background: #fff;
+  border-radius: 16px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+}
+
+.queue-number-big {
+  font-size: 64px;
+  font-weight: 700;
+  letter-spacing: 2px;
+}
+
+.remaining-big {
+  font-size: 48px;
+  font-weight: 700;
+}
+
+.status-box {
+  max-width: 480px;
+  margin: 60px auto;
+}
+
+.btn-block {
+  width: 100%;
+}
+
+.staff-panel {
+  max-width: 480px;
+  margin: 40px auto;
+}

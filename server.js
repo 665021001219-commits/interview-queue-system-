@@ -29,11 +29,11 @@ const STAFF_PASSWORD = '1111';
 // แก้ไขให้รองรับทั้ง DB_ และ MYSQL ตัวแปรบน Railway
 // ------------------------------------------
 const pool = mysql.createPool({
-  host: process.env.MYSQLHOST || 'localhost',
-  port: Number(process.env.MYSQLPORT || 3306),
-  user: process.env.MYSQLUSER || 'root',
-  password: process.env.MYSQLPASSWORD || '',
-  database: process.env.MYSQLDATABASE || 'railway',
+  host: 'mysql.railway.internal',
+  port: Number(process.env.MYSQLPORT || process.env.DB_PORT || 3306),
+  user: process.env.MYSQLUSER || process.env.DB_USER || 'root',
+  password: process.env.MYSQLPASSWORD || process.env.DB_PASSWORD || '',
+  database: process.env.MYSQLDATABASE || process.env.DB_NAME || 'railway',
   waitForConnections: true,
   connectionLimit: 10,
 });

@@ -10,6 +10,7 @@ const express = require('express');
 const session = require('express-session');
 const mysql = require('mysql2/promise');
 const QRCode = require('qrcode');
+const bcrypt = require('bcryptjs');
 const http = require('http');
 const { Server } = require('socket.io');
 const path = require('path');
@@ -22,18 +23,20 @@ const io = new Server(server);
 // ตั้งค่า Staff Login แบบ Fix ในโค้ด (ตามที่ตกลงกัน)
 // ------------------------------------------
 const STAFF_EMAIL = 'staff@gmail.com';
-const STAFF_PASSWORD = '1111';
+// นี่คือรหัสผ่าน "1111" ที่ถูกแฮชไว้แล้ว (ไม่ใช่ตัวหนังสือ 1111 ตรง ๆ)
+// แฮชคือการสับรหัสผ่านให้ถอดกลับเป็นตัวเดิมไม่ได้ ต่อให้มีคนเห็นโค้ดนี้ก็เดารหัสจริงไม่ออก
+const STAFF_PASSWORD_HASH = '$2b$10$fNESbHn784cheKm/BBAv3OFTx8AdAlC7XwrgHcnBbjx6OvgqKd3eW';
 
 // ------------------------------------------
 // เชื่อมต่อฐานข้อมูล MySQL
 // แก้ไขให้รองรับทั้ง DB_ และ MYSQL ตัวแปรบน Railway
 // ------------------------------------------
 const pool = mysql.createPool({
-  host: process.env.DB_HOST || process.env.MYSQLHOST || 'localhost',
-  port: Number(process.env.DB_PORT || process.env.MYSQLPORT || 3306),
-  user: process.env.DB_USER || process.env.MYSQLUSER || 'root',
-  password: process.env.DB_PASSWORD || process.env.MYSQLPASSWORD || '',
-  database: process.env.DB_NAME || process.env.MYSQLDATABASE || 'interview_queue',
+  host: process.env.MYSQLHOST || 'localhost',
+  port: Number(process.env.MYSQLPORT || 3306),
+  user: process.env.MYSQLUSER || 'root',
+  password: process.env.MYSQLPASSWORD || '',
+  database: process.env.MYSQLDATABASE || 'railway',
   waitForConnections: true,
   connectionLimit: 10,
 });
@@ -86,7 +89,12 @@ app.get('/staff.html', (req, res, next) => {
 app.post('/api/login', (req, res) => {
   const { email, password } = req.body;
 
-  if (email === STAFF_EMAIL && password === STAFF_PASSWORD) {
+  // เช็คอีเมลก่อนแบบตรง ๆ ได้ เพราะอีเมลไม่ใช่ข้อมูลลับ
+  // ส่วนรหัสผ่าน ใช้ bcrypt.compareSync เทียบกับค่าแฮช แทนการเทียบตัวหนังสือตรง ๆ
+  // (bcrypt จะเอา password ที่พิมพ์มา ไปแฮชด้วยวิธีเดียวกัน แล้วดูว่าผลลัพธ์ตรงกับ STAFF_PASSWORD_HASH ไหม)
+  const isPasswordCorrect = bcrypt.compareSync(password || '', STAFF_PASSWORD_HASH);
+
+  if (email === STAFF_EMAIL && isPasswordCorrect) {
     req.session.isStaff = true;
     return res.json({ ok: true });
   }
